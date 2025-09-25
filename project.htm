@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aqua Quest - Groundwater Conservation</title>
+<style>
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: Arial, sans-serif;
+    background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+    background-size: cover;
+    color: #e0f7fa;
+  }
+  #app {
+    background-color: rgba(0, 49, 72, 0.8);
+    min-height: 100vh;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #profileCircle {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background-color: #039be5;
+    color: #e0f7fa;
+    font-weight: bold;
+    font-size: 1.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 15px; left: 15px;
+    user-select: none;
+    box-shadow: 0 0 10px #0288d1;
+    z-index: 1000;
+  }
+  #profileCircle.hidden { display: none; }
+  #cornerCoins {
+    position: fixed;
+    top: 15px; right: 15px;
+    background-color: #0277bd;
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    border-radius: 20px;
+    box-shadow: 0 0 12px #03a9f4;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    color: #fff;
+    z-index: 1000;
+  }
+  #cornerCoins .coin-icon { margin-right: 8px; }
+  /* Title Page */
+  #titlePage {
+    margin-top: 90px;
+    text-align: center;
+  }
+  #titlePage h1 {
+    font-size: 3rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 3px;
+    color: #80deea;
+    text-shadow: 1px 1px 3px #004d40;
+  }
+  #titlePage p {
+    margin-top: 0; margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #b2ebf2;
+    text-shadow: 1px 1px 2px #00251a;
+  }
+  #userForm {
+    background-color: rgba(0,0,0,0.5);
+    display: inline-block;
+    padding: 20px 25px;
+    border-radius: 12px;
+  }
+  #userForm label {
+    display: block;
+    margin: 10px 0 4px;
+    font-size: 1rem;
+  }
+  #userForm input {
+    width: 220px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  #userForm button {
+    margin-top: 15px;
+    width: 100%;
+    background-color: #039be5;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    box-shadow: 0 0 10px #0288d1;
+  }
+  #userForm button:hover { background-color: #0277bd; }
+  /* Main Menu */
+  #mainMenu {
+    display: none;
+    margin-top: 80px;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px 30px;
+    border-radius: 15px;
+    width: 320px;
+    text-align: center;
+  }
+  #mainMenu h2 {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #4dd0e1;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px #006064;
+  }
+  #mainMenu button {
+    width: 100%;
+    padding: 12px 0;
+    margin: 10px 0;
+    font-weight: bold;
+    font-size: 1.1rem;
+    background-color: #039be5;
+    border: none;
+    color: #e0f7fa;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #0288d1;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #mainMenu button:hover { background-color: #0277bd; }
+  #mainMenu button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  /* Level Selector */
+  #levelSelector {
+    display: none;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px 25px;
+    border-radius: 14px;
+    width: 280px;
+    margin-top: 60px;
+  }
+  #levelSelector label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+  }
+  #levelSelector select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+  }
+  #levelSelector button {
+    margin-top: 15px;
+    width: 100%;
+    background-color: #039be5;
+    color: #e0f7fa;
+    font-weight: bold;
+    padding: 12px 0;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0288d1;
+  }
+  #levelSelector button:hover { background-color: #0277bd; }
+  /* Question Container */
+  #questionContainer {
+    display: none;
+    max-width: 480px;
+    background: rgba(0,0,0,0.6);
+    padding: 25px 30px;
+    border-radius: 15px;
+    margin-top: 50px;
+    box-shadow: 0 0 20px #00bcd4;
+  }
+  #questionText {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #b2ebf2;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+  }
+  .option-btn {
+    background-color: #0288d1;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin: 7px 0;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #e0f7fa;
+    cursor: pointer;
+    box-shadow: 0 0 8px #03a9f4;
+    transition: background-color 0.3s ease;
+  }
+  .option-btn:hover:not(:disabled) { background-color: #0277bd; }
+  .option-btn.correct { background-color: #43a047 !important; }
+  .option-btn.incorrect { background-color: #e53935 !important; }
+  .option-btn:disabled { cursor: default; opacity: 0.7; }
+  #hintBtn {
+    margin-top: 15px;
+    background-color: #00acc1;
+    border: none;
+    padding: 10px 24px;
+    color: #e0f7fa;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 8px #00bcd4;
+  }
+  #hintText {
+    margin-top: 15px;
+    font-style: italic;
+    color: #a7ffeb;
+    min-height: 1.5em;
+  }
+  #feedbackButtons {
+    margin-top: 25px;
+    text-align: center;
+  }
+  #feedbackButtons button {
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 0 12px;
+    box-shadow: 0 0 10px #0288d1;
+    color: #e0f7fa;
+    background-color: #039be5;
+    transition: background-color 0.3s ease;
+  }
+  #feedbackButtons button:hover { background-color: #0277bd; }
+  #feedbackButtons button.hidden { display: none; }
+  #btnQuitLevel {
+    margin-top: 30px;
+    width: 100%;
+    background-color: #e53935;
+    box-shadow: 0 0 10px #b71c1c;
+    color: #e0f7fa;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 0;
+    font-weight: bold;
+  }
+  #btnQuitLevel:hover { background-color: #ab000d; }
+  /* Help Section */
+  #helpContent {
+    display: none;
+    max-width: 420px;
+    background: rgba(0,0,0,0.6);
+    color: #b2ebf2;
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-top: 50px;
+    box-shadow: 0 0 20px #00bcd4;
+  }
+  #helpContent h2 { margin-top: 0; color: #4dd0e1; }
+  #helpContent ul { padding-left: 20px; }
+  #helpContent button {
+    margin-top: 25px;
+    width: 100%;
+    background-color: #039be5;
+    border: none;
+    color: #e0f7fa;
+    font-weight: bold;
+    padding: 12px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0288d1;
+  }
+  #helpContent button:hover { background-color: #0277bd; }
+  /* Settings Section */
+  #settingsContent {
+    display: none;
+    max-width: 340px;
+    background: rgba(0,0,0,0.6);
+    color: #b2ebf2;
+    padding: 20px 25px;
+    border-radius: 15px;
+    margin-top: 50px;
+    box-shadow: 0 0 20px #00bcd4;
+  }
+  #settingsContent h2 {
+    margin-top: 0;
+    color: #4dd0e1;
+    margin-bottom: 15px;
+  }
+  #settingsContent label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+  }
+  #settingsContent input[type=text],
+  #settingsContent input[type=number],
+  #settingsContent input[type=email] {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 7px;
+    border: none;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  #settingsContent .sound-toggle {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+  }
+  #settingsContent .sound-toggle input[type=checkbox] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  #settingsContent button.save-btn {
+    margin-top: 20px;
+    width: 100%;
+    background-color: #039be5;
+    border: none;
+    color: #e0f7fa;
+    font-weight: bold;
+    padding: 12px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0288d1;
+  }
+  #settingsContent button.save-btn:hover { background-color: #0277bd; }
+  #settingsContent button.back-btn {
+    margin-top: 15px;
+    width: 100%;
+    background-color: #e53935;
+    border: none;
+    color: #e0f7fa;
+    font-weight: bold;
+    padding: 12px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #b71c1c;
+  }
+  #settingsContent button.back-btn:hover { background-color: #ab000d; }
+  /* Responsive */
+  @media (max-width: 480px) {
+    #profileCircle { width: 50px; height: 50px; font-size: 1.1rem; top: 10px; left: 10px; }
+    #cornerCoins { font-size: 1.1rem; padding: 6px 10px; top: 10px; right: 10px; }
+    #mainMenu, #levelSelector, #questionContainer, #helpContent, #settingsContent { width: 95vw; }
+    #userForm input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="app" role="main">
+
+  <div id="profileCircle" class="hidden" aria-label="User Profile Initials" tabindex="0"></div>
+  <div id="cornerCoins" aria-live="polite" aria-atomic="true" aria-label="Coin count">
+    <span class="coin-icon">💧</span><span id="coinsCount">0</span>
+  </div>
+
+  <!-- Title Page -->
+  <section id="titlePage" aria-label="Game start page with profile input">
+    <h1>Aqua Quest</h1>
+    <p>Groundwater Conservation Quiz</p>
+    <form id="userForm" autocomplete="off" novalidate>
+      <label for="userName">Name:</label>
+      <input type="text" id="userName" name="userName" maxlength="30" placeholder="Your name" required aria-required="true" />
+      <label for="userAge">Age:</label>
+      <input type="number" id="userAge" name="userAge" min="5" max="120" placeholder="Your age" required aria-required="true" />
+      <label for="userEmail">Email:</label>
+      <input type="email" id="userEmail" name="userEmail" placeholder="Your email" required aria-required="true" />
+      <button type="submit">Start</button>
+    </form>
+  </section>
+
+  <!-- Main Menu -->
+  <section id="mainMenu" aria-label="Main game menu" tabindex="0">
+    <h2>Aqua Quest</h2>
+    <button id="btnStartGame">Start Game</button>
+    <button id="btnLevels">Select Level</button>
+    <button id="btnHelp">Help</button>
+    <button id="btnSettings">Settings</button>
+  </section>
+
+  <!-- Level Selector -->
+  <section id="levelSelector" aria-label="Select game level">
+    <label for="levelSelect">Choose Level:</label>
+    <select id="levelSelect" aria-required="true"></select>
+    <button id="btnStartLevel">Start Level</button>
+    <button id="btnBackToMenuFromLevels">Back to Menu</button>
+  </section>
+
+  <!-- Question Container -->
+  <section id="questionContainer" aria-live="polite" aria-atomic="true" aria-label="Quiz question area" tabindex="0">
+    <div id="questionText"></div>
+    <div class="options" role="list" aria-label="Answer options"></div>
+    <button id="hintBtn" aria-label="Show hint">Hint</button>
+    <div id="hintText" aria-live="polite" aria-atomic="true"></div>
+    <div id="feedbackButtons">
+      <button id="btnTryAgain" class="hidden">Try Again</button>
+      <button id="btnNextQuestion" class="hidden">Next Question</button>
+    </div>
+    <button id="btnQuitLevel">Quit to Menu</button>
+  </section>
+
+  <!-- Help Section -->
+  <section id="helpContent" tabindex="0" aria-label="Game instructions and help">
+    <h2>Help & Instructions</h2>
+    <ul>
+      <li>Answer groundwater conservation questions.</li>
+      <li>Correct answer: +10 coins; Wrong answer: -5 coins.</li>
+      <li>You get 2 tries on each question if incorrect.</li>
+      <li>Use the Hint button for help with each question.</li>
+      <li>Complete current level to unlock the next. 5 levels total, 10 questions each.</li>
+      <li>Edit your profile and toggle sound settings anytime.</li>
+    </ul>
+    <button id="btnBackFromHelp">Back to Menu</button>
+  </section>
+
+  <!-- Settings Section -->
+  <section id="settingsContent" aria-label="Settings and profile editing">
+    <h2>Settings</h2>
+    <form id="settingsForm" autocomplete="off" novalidate>
+      <label for="settingsName">Name:</label>
+      <input type="text" id="settingsName" maxlength="30" required />
+      <label for="settingsAge">Age:</label>
+      <input type="number" id="settingsAge" min="5" max="120" required />
+      <label for="settingsEmail">Email:</label>
+      <input type="email" id="settingsEmail" required />
+      <div class="sound-toggle">
+        <input type="checkbox" id="soundToggle" />
+        <label for="soundToggle">Sound On / Off</label>
+      </div>
+      <button type="submit" class="save-btn">Save</button>
+    </form>
+    <button id="btnBackFromSettings" class="back-btn">Back to Menu</button>
+  </section>
+
+</div>
+<script>
+(() => {
+  const state = {
+    user: { name: '', age: '', email: '' },
+    coins: 0,
+    currentLevel: 1,
+    highestUnlockedLevel: 1,
+    currentQuestionIndex: 0,
+    triesLeft: 2,
+    soundOn: true,
+    questionsPerLevel: 10,
+    totalLevels: 5,
+    questions: [],
+    quizActive: false,
+  };
+
+  // Question bank for 5 levels, 10 questions each with shuffled options each load
+  const baseQuestionBank = {
+    1: [
+      { q: "What is groundwater?", options: ["Water above soil", "Water underground", "Water in lakes", "Rainwater on roofs"], answerIndex: 1, hint: "Water stored underground." },
+      { q: "Why is groundwater important for farmers?", options: ["Drinking only", "Irrigate crops", "Causes pollution", "Makes soil infertile"], answerIndex: 1, hint: "Farmers use it when dry." },
+      { q: "What happens if groundwater is overused?", options: ["Water scarcity", "Cleaner water", "Faster crop growth", "More rainfall"], answerIndex: 0, hint: "Leads to shortages and damage." },
+      { q: "Which method helps conserve groundwater?", options: ["Irrigate at night", "Leave taps open", "Dig more wells", "Ignore rainwater"], answerIndex: 0, hint: "Water at cooler times reduces loss." },
+      { q: "What is 'Tragedy of the Commons'?", options: ["Story of farming", "Overuse of shared resource", "Groundwater contamination", "Rainwater collection"], answerIndex: 1, hint: "Everyone overuses shared resource." },
+      { q: "Which crop uses most groundwater?", options: ["Rice", "Millets", "Lentils", "Maize"], answerIndex: 0, hint: "Flooded fields need lots of water." },
+      { q: "What tech monitors groundwater levels?", options: ["IoT sensors", "Manual plowing", "Satellite radio", "Rain gauges"], answerIndex: 0, hint: "Smart sensors measure water below ground." },
+      { q: "Why cooperate on groundwater use?", options: ["For fair use", "To compete", "Waste water", "Avoid community"], answerIndex: 0, hint: "Cooperation prevents depletion." },
+      { q: "What is over-pumping's effect?", options: ["Lowers water table", "Water rises", "Fertile soil", "More rain"], answerIndex: 0, hint: "Too much pumping harms lakes." },
+      { q: "Conservation method reducing groundwater?", options: ["Drip irrigation", "Flood irrigation", "Leave fields dry", "More fertilizer"], answerIndex: 0, hint: "Drip saves water by precise watering." },
+    ],
+    2: [
+      { q: "What reduces groundwater recharge?", options: ["Urbanization", "Planting trees", "Recharge ponds", "Rain harvesting"], answerIndex: 0, hint: "Paved surfaces stop water soaking in." },
+      { q: "Role of wetlands in groundwater?", options: ["Pollute", "Recharge & filter", "Stop rain", "Drain lakes"], answerIndex: 1, hint: "Wetlands cleanse and recharge groundwater." },
+      { q: "What blocks wells?", options: ["Sediment buildup", "Roots", "Lightning", "Leaves"], answerIndex: 0, hint: "Sediment buildup clogs wells." },
+      { q: "How to reduce pumping cost?", options: ["Efficient pumps", "Over-pumping", "Ignore levels", "Increase demand"], answerIndex: 0, hint: "Better pumps save energy and water." },
+      { q: "Smart groundwater governance?", options: ["Ignore rules", "Cooperative tech", "Unlimited wells", "Industrial pollution"], answerIndex: 1, hint: "Cooperation and technology help sustainability." },
+      { q: "Tool for irrigation schedules?", options: ["AI support", "Guesswork", "Random", "Soil color"], answerIndex: 0, hint: "AI predicts best watering times." },
+      { q: "What affects pumping cost?", options: ["Water table depth", "Water color", "City location", "Rainfall"], answerIndex: 0, hint: "Deeper water requires more power." },
+      { q: "Rainfall variability does?", options: ["Affects recharge", "Always replenishes", "No effect", "Pollutes groundwater"], answerIndex: 0, hint: "More rain means more recharge." },
+      { q: "Action harming groundwater quality?", options: ["Excess fertilizer", "Controlled irrigation", "Rain harvesting", "Efficient pumping"], answerIndex: 0, hint: "Chemicals pollute groundwater." },
+      { q: "Sustainable pumping practice?", options: ["Pump < recharge", "Pump more in drought", "Ignore neighbors", "More wells"], answerIndex: 0, hint: "Pump less than recharge rate." },
+    ],
+    3: [
+      { q: "Why monitor crop water stress?", options: ["Know watering time", "Harvest early", "Reduce soil", "Use more fertilizer"], answerIndex: 0, hint: "Stress indicates when to water crops." },
+      { q: "Tech that tracks crop water?", options: ["Drones & remote sensing", "Submarine drones", "Tractors", "Satellite TV"], answerIndex: 0, hint: "Drones monitor vegetation health." },
+      { q: "Blockchain helps groundwater how?", options: ["Transparent usage", "Increase pumping", "Ignore rules", "More wells"], answerIndex: 0, hint: "Immutable records build trust." },
+      { q: "Why is community trust needed?", options: ["Ensure cooperation", "Cause conflicts", "Allow unlimited use", "Ignore conservation"], answerIndex: 0, hint: "Trust supports shared resource use." },
+      { q: "Mobile apps help by?", options: ["Providing tips and updates", "Distracting farmers", "Increasing pumping", "Replacing irrigation"], answerIndex: 0, hint: "Apps educate and connect users." },
+      { q: "What is a smart well?", options: ["Well with sensors", "Deeper well", "Well without pump", "Urban well"], answerIndex: 0, hint: "Sensors monitor water levels." },
+      { q: "Drought affects groundwater how?", options: ["Less recharge, more stress", "Water table rise", "No effect", "Clean water"], answerIndex: 0, hint: "Dry weather reduces recharge." },
+      { q: "How to increase recharge?", options: ["Rain gardens", "Paving", "More wells", "Ignore runoff"], answerIndex: 0, hint: "Absorbent structures help recharge." },
+      { q: "AI decision support provides?", options: ["Advice on irrigation", "Guesses", "Local knowledge", "Water supply"], answerIndex: 0, hint: "AI analyzes data for best decisions." },
+      { q: "Over-pumping harms ecosystems how?", options: ["Lowers lakes, harms species", "Improves fish habitat", "Raises rainfall", "Cleans water"], answerIndex: 0, hint: "Water loss harms nearby ecosystems." },
+    ],
+    4: [
+      { q: "Cooperative groundwater governance?", options: ["Community rules and monitoring", "No rules", "Ignore water levels", "Uncontrolled wells"], answerIndex: 0, hint: "Community cooperation prevents overuse." },
+      { q: "Why pumping costs rise?", options: ["Water table lowers", "Cheaper electricity", "Better pumps", "More water"], answerIndex: 0, hint: "Deeper water requires more energy." },
+      { q: "Smart contracts role?", options: ["Enforce rules automatically", "Delay extraction", "Paper contracts", "Increase use"], answerIndex: 0, hint: "Smart contracts automate enforcement." },
+      { q: "Blockchain motivates conservation by?", options: ["Trust and accountability", "Hide data", "Allow overuse", "Ignore community"], answerIndex: 0, hint: "Transparency builds trust." },
+      { q: "Common-pool resource challenge?", options: ["Balance individual & collective", "Unlimited supply", "No conflicts", "No monitoring"], answerIndex: 0, hint: "Selfish use causes depletion." },
+      { q: "Factor affecting crop water needs?", options: ["Crop type & climate", "Time of day", "User age", "Distance from well"], answerIndex: 0, hint: "Different crops need different water." },
+      { q: "Drones improve groundwater how?", options: ["Survey water stress", "Drill wells", "Pump water", "Spray chemicals"], answerIndex: 0, hint: "Drones give visual field data." },
+      { q: "Ignoring pumping limits causes?", options: ["Resource depletion", "More water", "Government reward", "Stronger crops"], answerIndex: 0, hint: "Limits prevent unsustainable use." },
+      { q: "Environmental costs affect farmers how?", options: ["Lower yields, higher costs", "No effect", "Better water", "Lower prices"], answerIndex: 0, hint: "Pollution hurts productivity." },
+      { q: "Adaptive groundwater governance means?", options: ["Respond to changes", "Ignore weather", "Fixed rules", "Individual only"], answerIndex: 0, hint: "Adaptation improves sustainability." },
+    ],
+    5: [
+      { q: "How do groundwater games help?", options: ["Show complex realities", "Random quizzes", "Replace real farming", "Only entertainment"], answerIndex: 0, hint: "Simulations show choices and impacts." },
+      { q: "Modern tech for groundwater?", options: ["IoT, AI, drones, blockchain", "Manual only", "Coal power", "Traditional farming"], answerIndex: 0, hint: "Tech improves data and trust." },
+      { q: "Behavior that promotes sustainability?", options: ["Cooperation & monitoring", "Unrestricted pumping", "Ignore rules", "Infinite wells"], answerIndex: 0, hint: "Teamwork preserves water." },
+      { q: "AI helps drought by?", options: ["Predicting shortages", "Causing pump failure", "Random guesses", "Stop irrigation"], answerIndex: 0, hint: "AI forecasts and advises." },
+      { q: "Trust in governance needs?", options: ["Transparency & data", "Secrecy", "Ignore disputes", "Allow cheating"], answerIndex: 0, hint: "Open info builds trust." },
+      { q: "Why combine IoT & remote sensing?", options: ["Spatial & real-time info", "Increase demand", "Confuse farmers", "Stop harvesting"], answerIndex: 0, hint: "Integration enhances data quality." },
+      { q: "Game hints are for?", options: ["Understanding questions", "Giving answers", "Replace learning", "Distract"], answerIndex: 0, hint: "Hints give clues, not answers." },
+      { q: "Why limit tries?", options: ["Learning from mistakes", "Punishment", "Give answers", "End game"], answerIndex: 0, hint: "Allows learning through retries." },
+      { q: "Aqua Quest's primary goal?", options: ["Teach water conservation", "Increase pumping", "Only entertainment", "Distract farmers"], answerIndex: 0, hint: "Educate on sustainable water use." },
+      { q: "How game helps communities?", options: ["Encourage action & smart use", "Ignore problems", "Promote selfishness", "Create conflicts"], answerIndex: 0, hint: "Foster cooperation and care." },
+    ]
+  };
+
+  // DOM selectors
+  const profileCircle = document.getElementById('profileCircle');
+  const coinsCountEl = document.getElementById('coinsCount');
+  const titlePage = document.getElementById('titlePage');
+  const userForm = document.getElementById('userForm');
+  const mainMenu = document.getElementById('mainMenu');
+  const btnStartGame = document.getElementById('btnStartGame');
+  const btnLevels = document.getElementById('btnLevels');
+  const btnHelp = document.getElementById('btnHelp');
+  const btnSettings = document.getElementById('btnSettings');
+  const levelSelector = document.getElementById('levelSelector');
+  const levelSelect = document.getElementById('levelSelect');
+  const btnStartLevel = document.getElementById('btnStartLevel');
+  const btnBackToMenuFromLevels = document.getElementById('btnBackToMenuFromLevels');
+  const questionContainer = document.getElementById('questionContainer');
+  const questionText = document.getElementById('questionText');
+  const optionsContainer = questionContainer.querySelector('.options');
+  const hintBtn = document.getElementById('hintBtn');
+  const hintText = document.getElementById('hintText');
+  const btnNextQuestion = document.getElementById('btnNextQuestion');
+  const btnTryAgain = document.getElementById('btnTryAgain');
+  const btnQuitLevel = document.getElementById('btnQuitLevel');
+  const helpContent = document.getElementById('helpContent');
+  const btnBackFromHelp = document.getElementById('btnBackFromHelp');
+  const settingsContent = document.getElementById('settingsContent');
+  const settingsForm = document.getElementById('settingsForm');
+  const btnBackFromSettings = document.getElementById('btnBackFromSettings');
+  const settingsName = document.getElementById('settingsName');
+  const settingsAge = document.getElementById('settingsAge');
+  const settingsEmail = document.getElementById('settingsEmail');
+  const soundToggle = document.getElementById('soundToggle');
+
+  function showSection(section){
+    [titlePage, mainMenu, levelSelector, questionContainer, helpContent, settingsContent].forEach(s=>s.style.display='none');
+    section.style.display='block';
+  }
+
+  function updateProfileCircle(){
+    if(!state.user.name.trim()){
+      profileCircle.classList.add('hidden');
+      profileCircle.textContent = '';
+      return;
+    }
+    const initials = state.user.name.trim().split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    profileCircle.textContent = initials;
+    profileCircle.title = state.user.name;
+    profileCircle.classList.remove('hidden');
+  }
+
+  function updateCoins(){
+    coinsCountEl.textContent = state.coins;
+  }
+
+  function validateProfile(name,age,email){
+    if(!name.trim()) return false;
+    if(isNaN(age) || age<5 || age>120) return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email.trim())) return false;
+    return true;
+  }
+
+  function fillLevelSelector(){
+    levelSelect.innerHTML = '';
+    for(let i=1;i<=state.totalLevels;i++){
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `Level ${i}` + (i>state.highestUnlockedLevel ? ' (Locked)' : '');
+      opt.disabled = i>state.highestUnlockedLevel;
+      levelSelect.appendChild(opt);
+    }
+    levelSelect.value = state.currentLevel;
+  }
+
+  function shuffle(arr){
+    let a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      let j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  // Load questions and shuffle options for current level
+  function loadLevelQuestions(level){
+    const rawQs = baseQuestionBank[level];
+    // Deep copy and shuffle options
+    state.questions = rawQs.map(q=>{
+      const shuffledOpts = shuffle(q.options);
+      const correctText = q.options[q.answerIndex];
+      const correctIndexShuffled = shuffledOpts.indexOf(correctText);
+      return {
+        q: q.q,
+        options: shuffledOpts,
+        answerIndex: correctIndexShuffled,
+        hint: q.hint,
+      };
+    });
+    state.currentQuestionIndex = 0;
+    state.triesLeft = 2;
+  }
+
+  function renderQuestion(){
+    hintText.textContent = '';
+    hintBtn.disabled = false;
+    btnTryAgain.classList.add('hidden');
+    btnNextQuestion.classList.add('hidden');
+
+    const q = state.questions[state.currentQuestionIndex];
+    questionText.textContent = `Q${state.currentQuestionIndex+1}: ${q.q}`;
+
+    optionsContainer.innerHTML = '';
+    q.options.forEach((opt,i)=>{
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.dataset.index = i;
+      btn.onclick = onOptionClick;
+      optionsContainer.appendChild(btn);
+    });
+
+    state.triesLeft = 2;
+    state.quizActive = true;
+  }
+
+  function markOption(btn,correct){
+    btn.classList.add(correct?'correct':'incorrect');
+  }
+  function disableOptions(){
+    [...optionsContainer.children].forEach(b => b.disabled = true);
+  }
+  function enableOptions(){
+    [...optionsContainer.children].forEach(b=>{
+      b.disabled = false;
+      b.classList.remove('correct','incorrect');
+    });
+  }
+  function showCorrectAnswer(){
+    const q = state.questions[state.currentQuestionIndex];
+    [...optionsContainer.children].forEach(b => {
+      if(+b.dataset.index === q.answerIndex){
+        b.classList.add('correct');
+      }
+    });
+  }
+  function onOptionClick(e){
+    if(!state.quizActive) return;
+    const btn = e.currentTarget;
+    const selectedIndex = +btn.dataset.index;
+    const q = state.questions[state.currentQuestionIndex];
+    
+    disableOptions();
+
+    if(selectedIndex === q.answerIndex){
+      markOption(btn,true);
+      state.coins += 10;
+      updateCoins();
+      hintBtn.disabled = true;
+      btnNextQuestion.classList.remove('hidden');
+      btnTryAgain.classList.add('hidden');
+      state.quizActive = false;
+    } else {
+      markOption(btn,false);
+      state.coins = Math.max(0,state.coins-5);
+      updateCoins();
+      state.triesLeft--;
+      if(state.triesLeft > 0){
+        btnTryAgain.classList.remove('hidden');
+        btnNextQuestion.classList.add('hidden');
+        hintBtn.disabled = false;
+        state.quizActive = false;
+      } else {
+        showCorrectAnswer();
+        btnTryAgain.classList.add('hidden');
+        btnNextQuestion.classList.remove('hidden');
+        hintBtn.disabled = true;
+        state.quizActive = false;
+      }
+    }
+  }
+  function onTryAgain(){
+    enableOptions();
+    btnTryAgain.classList.add('hidden');
+    btnNextQuestion.classList.add('hidden');
+    hintText.textContent = '';
+    hintBtn.disabled = false;
+    state.quizActive = true;
+  }
+  function onNextQuestion(){
+    state.currentQuestionIndex++;
+    if(state.currentQuestionIndex >= state.questionsPerLevel){
+      alert(`Level ${state.currentLevel} completed! Coins: ${state.coins}`);
+      if(state.currentLevel === state.highestUnlockedLevel && state.currentLevel < state.totalLevels){
+        state.highestUnlockedLevel++;
+        alert(`Level ${state.highestUnlockedLevel} unlocked!`);
+      }
+      showMainMenu();
+      return;
+    }
+    renderQuestion();
+  }
+  function onShowHint(){
+    hintText.textContent = state.questions[state.currentQuestionIndex].hint;
+    hintBtn.disabled = true;
+  }
+  function showMainMenu(){
+    showSection(mainMenu);
+    fillLevelSelector();
+    updateProfileCircle();
+    updateCoins();
+    updateLevelButtons();
+  }
+  function updateLevelButtons(){
+    btnStartGame.disabled = state.highestUnlockedLevel < 1;
+  }
+  function showLevelSelector(){
+    fillLevelSelector();
+    showSection(levelSelector);
+  }
+  function quitLevel(){
+    if(confirm('Quit current level and return to menu? Progress lost.')){
+      showMainMenu();
+      state.quizActive = false;
+    }
+  }
+  function showHelp(){
+    showSection(helpContent);
+  }
+  function showSettings(){
+    showSection(settingsContent);
+    settingsName.value = state.user.name;
+    settingsAge.value = state.user.age;
+    settingsEmail.value = state.user.email;
+    soundToggle.checked = state.soundOn;
+  }
+  function onSaveSettings(e){
+    e.preventDefault();
+    const name = settingsName.value.trim();
+    const age = Number(settingsAge.value);
+    const email = settingsEmail.value.trim();
+    if(!validateProfile(name,age,email)){
+      alert('Enter valid Name, Age (5-120), and Email.');
+      return;
+    }
+    state.user.name = name;
+    state.user.age = age;
+    state.user.email = email;
+    state.soundOn = soundToggle.checked;
+    updateProfileCircle();
+    alert('Settings saved.');
+    showMainMenu();
+  }
+  function onUserFormSubmit(e){
+    e.preventDefault();
+    const name = document.getElementById('userName').value.trim();
+    const age = Number(document.getElementById('userAge').value);
+    const email = document.getElementById('userEmail').value.trim();
+    if(!validateProfile(name,age,email)){
+      alert('Enter valid Name, Age (5-120), and Email.');
+      return;
+    }
+    state.user = { name, age, email };
+    state.coins = 0;
+    state.currentLevel = 1;
+    state.highestUnlockedLevel = 1;
+    updateProfileCircle();
+    showMainMenu();
+  }
+  function startGame(){
+    state.currentLevel = 1;
+    state.coins = 0;
+    loadLevelQuestions(state.currentLevel);
+    showSection(questionContainer);
+    renderQuestion();
+  }
+  function startSelectedLevel(){
+    const lvl = Number(levelSelect.value);
+    if(lvl > state.highestUnlockedLevel){
+      alert('Level locked. Complete previous levels first.');
+      return;
+    }
+    state.currentLevel = lvl;
+    state.coins = 0;
+    loadLevelQuestions(lvl);
+    showSection(questionContainer);
+    renderQuestion();
+  }
+
+  // Attach events
+  userForm.addEventListener('submit', onUserFormSubmit);
+  btnStartGame.addEventListener('click', startGame);
+  btnLevels.addEventListener('click', showLevelSelector);
+  btnHelp.addEventListener('click', showHelp);
+  btnSettings.addEventListener('click', showSettings);
+  btnBackToMenuFromLevels.addEventListener('click', showMainMenu);
+  btnBackFromHelp.addEventListener('click', showMainMenu);
+  btnBackFromSettings.addEventListener('click', showMainMenu);
+  btnStartLevel.addEventListener('click', startSelectedLevel);
+  btnTryAgain.addEventListener('click', onTryAgain);
+  btnNextQuestion.addEventListener('click', onNextQuestion);
+  hintBtn.addEventListener('click', onShowHint);
+  btnQuitLevel.addEventListener('click', quitLevel);
+  settingsForm.addEventListener('submit', onSaveSettings);
+
+  showSection(titlePage);
+  updateCoins();
+  updateProfileCircle();
+})();
+</script>
+</body>
+</html>
